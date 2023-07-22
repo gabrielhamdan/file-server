@@ -4,6 +4,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "logs.h"
+#include <arpa/inet.h>
+
+void get_client_addr(struct sockaddr_in socketaddr, char **client_address) {
+    char addr[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(socketaddr.sin_addr), addr, INET_ADDRSTRLEN);
+
+    uint16_t port = htons(socketaddr.sin_port);
+
+	sprintf((char *)client_address, "%s:%d", addr, port);
+}
 
 char *get_timestamp() {
     time_t c_time = time(NULL);

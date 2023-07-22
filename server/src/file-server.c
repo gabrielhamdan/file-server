@@ -34,11 +34,15 @@ void server_init() {
         exit(EXIT_FAILURE);
     } else print_std_log("Socket was successfully created.");
 
+    if (setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+        print_err_log(strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
 	inet_pton(AF_INET, host, &(serv_addr.sin_addr));
 	serv_addr.sin_port = htons(port);
-    int option = 1;
 
     if(bind(serverfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
 		print_err_log(strerror(errno));
@@ -61,24 +65,24 @@ void server_init() {
     char *startup_message;
     startup_message = malloc(32 * sizeof(char) + sizeof(time_elapsed));
     sprintf(startup_message, "Server startup in %lf seconds.", time_elapsed);
-
     print_std_log(startup_message);
-    
     free(startup_message);
     startup_message = NULL;
 
     pthread_t t_id;
-    pthread_create(&t_id, NULL, &get_prompt, NULL);
+    pthread_create(&t_id, NULL, &get_prompt, (void *)serverfd);
 
     keep_listening(&serverfd);
 }
 
 void keep_listening(int *serverfd) {
     pthread_t t_id;
+    char s_client_addr[64];
+    char accept_msg[128] = "Client accepted from ";
 
     while(1){
-        putchar('\n');
         print_std_log("Waiting for a new connection.");
+        prompt_output("");
 
         struct sockaddr_in cli_addr;
         socklen_t clienteLen = sizeof(cli_addr);
@@ -88,24 +92,32 @@ void keep_listening(int *serverfd) {
         client->sockaddr = cli_addr;
         client->sockfd = connfd;
 
+        printf("\n");
+        get_client_addr(client->sockaddr, s_client_addr);
+        strcat(accept_msg, s_client_addr);
+        print_std_log(accept_msg);
+
         pthread_create(&t_id, NULL, &handle_client, (void*)client);
-        putchar(' ');
     }
 }
 
 bool shutdown_server() {
     prompt_output("Shut down server? (y/n) ");
-    char prompt[3];
-    fgets(prompt, 3, stdin);
+    char prompt[8];
+    fgets(prompt, 8, stdin);
     prompt[strcspn(prompt, "\n")] = 0;
 
     if(strcmp(prompt, "y") == 0 || strcmp(prompt, "Y") == 0)
         return true;
+    else
+        print_unknown_command(prompt);
     
     return false;
 }
 
 int main(int argc, char **argv) {
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     if(argc >= 2) {
         host = malloc(strlen(argv[1]) * sizeof(char));
         strcpy(host, argv[1]);

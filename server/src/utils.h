@@ -2,7 +2,12 @@
 #define _UTILS_H
 
 #include <stdbool.h>
+#include <arpa/inet.h>
 
+/**
+ * @brief Get client address and store to a string passed as a parameter.
+*/
+void get_client_addr(struct sockaddr_in, char **);
 /**
  * @brief Return formatted timestamp.
  */

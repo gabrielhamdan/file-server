@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "./prompt.h"
 
 #define LOGS_DIR "./logs"
 #define STD_LOG_P "/std_log.txt"

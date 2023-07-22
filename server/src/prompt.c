@@ -10,6 +10,10 @@
 
 bool should_shutdown = false;
 
+void print_unknown_command(char * prompt) {
+    printf("> Unknown command %s.\n", prompt);
+}
+
 void prompt_eval(char *prompt) {
     if(strlen(prompt) == 0)
         return;
@@ -17,7 +21,7 @@ void prompt_eval(char *prompt) {
     if(strcmp(prompt, QUIT) == 0)
         should_shutdown = shutdown_server();
     else
-        printf("> Unknown command %s.\n", prompt);
+        print_unknown_command(prompt);
 }
 
 void prompt_output(char *output) {
@@ -27,22 +31,23 @@ void prompt_output(char *output) {
         printf("> %s", output);
 }
 
-void *get_prompt() {
+void *get_prompt(void *fd) {
+    int serverfd = (int *)fd;
 
     while(!should_shutdown) {
-        fflush(stdout);
-        prompt_output("");
-
         char prompt[512];
         fgets(prompt, 510, stdin);
         prompt[strcspn(prompt, "\n")] = 0;
 
         prompt_eval(prompt);
+
+        prompt_output("");
     }
 
     pthread_detach(pthread_self());
 
     print_std_log("Shutting down server.");
+    close(&fd);
     exit(EXIT_SUCCESS);
 
     return NULL;

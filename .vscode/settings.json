@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "stdio.h": "c",
+        "stdbool.h": "c",
+        "socket.h": "c",
+        "unistd.h": "c",
+        "stdarg.h": "c",
+        "time.h": "c",
+        "consts.h": "c"
+    }
+}

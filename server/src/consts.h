@@ -10,6 +10,7 @@
 typedef struct {
 	struct sockaddr_in sockaddr;
 	int sockfd;
+	char addr[64];
 } Client;
 
 typedef struct {

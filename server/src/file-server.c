@@ -11,6 +11,7 @@
 #include "./client_t.h"
 #include "./prompt.h"
 #include <stdio.h>
+#include "./message.h"
 
 char *host = LOCALHOST;
 int port = DEFAULT_PORT;
@@ -78,7 +79,7 @@ void server_init() {
 void keep_listening(int *serverfd) {
     pthread_t t_id;
     char s_client_addr[64];
-    char accept_msg[128] = "Client accepted from ";
+    char accept_msg[128];
 
     while(1){
         print_std_log("Waiting for a new connection.");
@@ -91,10 +92,11 @@ void keep_listening(int *serverfd) {
         Client *client = (Client *)malloc(sizeof(Client));
         client->sockaddr = cli_addr;
         client->sockfd = connfd;
+        get_client_addr(client->sockaddr, client->addr);
 
-        printf("\n");
-        get_client_addr(client->sockaddr, s_client_addr);
-        strcat(accept_msg, s_client_addr);
+        printf("\b\b");
+        memset(accept_msg, 0 , sizeof(accept_msg));
+        sprintf(accept_msg, "%s %s", client->addr, CLIENT_ACCEPTED_MSG);
         print_std_log(accept_msg);
 
         pthread_create(&t_id, NULL, &handle_client, (void*)client);

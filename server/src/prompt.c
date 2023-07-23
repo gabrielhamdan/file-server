@@ -5,6 +5,8 @@
 #include "./logs.h"
 #include <stdlib.h>
 #include "./file-server.h"
+#include "./client_t.h"
+#include "./consts.h"
 
 #define QUIT "!q"
 
@@ -46,6 +48,7 @@ void *get_prompt(void *fd) {
 
     pthread_detach(pthread_self());
 
+    printf("\b\b");
     print_std_log("Shutting down server.");
     close(&fd);
     exit(EXIT_SUCCESS);

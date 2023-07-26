@@ -5,5 +5,6 @@
 
 void *handle_client(void *);
 void help_client(Client *);
+void serve_client(char *, Client *);
 
 #endif

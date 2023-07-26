@@ -5,9 +5,13 @@
 #include <stdbool.h>
 #include "./logs.h"
 #include "./prompt.h"
+#include "./files.h"
 
 #define BUFFER_SIZE 1024
 #define HELP "?"
+
+static const char *commands[] = {"ls", "?"};
+static const int commands_len = sizeof(commands) / sizeof(commands[0]);
 
 void serve_client(char *buffer, Client *client) {
     write(client->sockfd, buffer, strlen(buffer));
@@ -19,6 +23,18 @@ void help_client(Client *client) {
     serve_client(help_msg, client);
 }
 
+void execute_command(int command, char *arg, Client *client) {
+    switch(command) {
+        case 0:
+            list_dir(client);
+            break;
+        case 1:
+            help_client(client);
+            break;
+    }
+}
+
+//mutex
 void get_client_prompt(char *prompt, Client *client) {
     int i = 0, j = 0;
     char command[8];
@@ -45,8 +61,15 @@ void get_client_prompt(char *prompt, Client *client) {
     j++;
     arg[j] = 0;
 
-    if(strcmp(command, HELP) == 0)
-        help_client(client);
+    int i_command = -1;
+    for(int i = 0; i < commands_len; i++)
+        if(strcmp(command, commands[i]) == 0) {
+            i_command = i;
+            break;
+        }
+
+    if(i_command >= 0)
+        execute_command(i_command, arg, client);
 }
 
 void *handle_client(void *client_t) {

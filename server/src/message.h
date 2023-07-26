@@ -1,6 +1,6 @@
 #ifndef _MESSAGE_H
 #define _MESSAGE_H
 
-#define CLIENT_ACCEPTED_MSG "client accepted."
+#define CLIENT_ACCEPTED_MSG "was accepted."
 
 #endif

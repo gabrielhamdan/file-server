@@ -13,11 +13,4 @@ typedef struct {
 	char addr[64];
 } Client;
 
-typedef struct {
-	char file_name[128];
-	char file_dir[64];
-	char file_alias[64];
-	int file_size;
-} FileData;
-
 #endif

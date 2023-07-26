@@ -8,7 +8,7 @@
 #include "./client_t.h"
 #include "./consts.h"
 
-#define QUIT "!q"
+#define QUIT "quit"
 
 bool should_shutdown = false;
 

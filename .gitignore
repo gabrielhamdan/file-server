@@ -1,6 +1,6 @@
-.vscode/
+.vscode
+files/
 logs/
+obj/
 server/server
-server/logs/
-server/files/
-server/obj/
+client/client

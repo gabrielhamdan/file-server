@@ -10,7 +10,7 @@
 #define BUFFER_SIZE 1024
 #define HELP "?"
 
-static const char *commands[] = {"ls", "?"};
+static const char *commands[] = {"ls", "?", "d", "u"};
 static const int commands_len = sizeof(commands) / sizeof(commands[0]);
 
 void serve_client(char *buffer, Client *client) {
@@ -30,6 +30,12 @@ void execute_command(int command, char *arg, Client *client) {
             break;
         case 1:
             help_client(client);
+            break;
+        case 2:
+            download_file(arg, client);
+            break;
+        case 3:
+            upload_file(arg, client);
             break;
     }
 }
@@ -54,7 +60,7 @@ void get_client_prompt(char *prompt, Client *client) {
     command[i] = 0;
     
     if(i < strlen(prompt)) {
-        for(i; i < strlen(prompt); i++, j++)
+        for(++i; i < strlen(prompt); i++, j++)
             arg[j] = prompt[i];
     }
 
